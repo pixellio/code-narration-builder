@@ -1,0 +1,9 @@
+// extracted by mini-css-extract-plugin
+export default {"App":"App","App-logo":"App-logo","App-logo-spin":"App-logo-spin","App-header":"App-header","App-link":"App-link"};
+    if(module.hot) {
+      // 1711991921094
+      var cssReload = require("../node_modules/mini-css-extract-plugin/dist/hmr/hotModuleReplacement.js")(module.id, {"publicPath":"dist","locals":true});
+      module.hot.dispose(cssReload);
+      
+    }
+  

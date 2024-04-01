@@ -1,0 +1,9 @@
+// extracted by mini-css-extract-plugin
+export default {};
+    if(module.hot) {
+      // 1711991921081
+      var cssReload = require("../node_modules/mini-css-extract-plugin/dist/hmr/hotModuleReplacement.js")(module.id, {"publicPath":"dist","locals":true});
+      module.hot.dispose(cssReload);
+      
+    }
+  

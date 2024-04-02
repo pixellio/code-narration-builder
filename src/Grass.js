@@ -1,4 +1,5 @@
 // Based on https://codepen.io/al-ro/pen/jJJygQ by al-ro, but rewritten in react-three-fiber
+//https://codesandbox.io/p/sandbox/grass-shader-8vv189?file=%2Fsrc%2FGrass.js%3A19%2C9-19%2C17
 import * as THREE from "three"
 import React, { useRef, useMemo } from "react"
 // import SimplexNoise from "simplex-noise"
@@ -27,16 +28,17 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
   const baseGeom = useMemo(() => new THREE.PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0), [options])
   const groundGeo = useMemo(() => {
     const geo = new THREE.PlaneGeometry(width, width, 32, 32);
-    const positionAttribute = geo.getAttribute('position');// geo.vertices
 
+    const positionAttribute = geo.getAttribute('position').array;// geo.vertices
     geo.verticesNeedUpdate = true
     geo.lookAt(new THREE.Vector3(0, 1, 0))
-    for (let i = 0; i < positionAttribute.length; i++) {
-      const v = positionAttribute[i]
-      v.y = getYPosition(v.x, v.z)
+    for (let i = 0; i < positionAttribute.length; i +=3) {
+      const x = positionAttribute[i];
+      const z = positionAttribute[i + 2];
+      positionAttribute[i + 1] =  getYPosition(x, z);
     }
-    geo.computeVertexNormals()
-    return geo
+    geo.computeVertexNormals();
+    return geo;
   }, [width])
   useFrame((state) => (materialRef.current.uniforms.time.value = state.clock.elapsedTime / 4))
   return (
@@ -51,8 +53,8 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
         </instancedBufferGeometry>
         <grassMaterial ref={materialRef} map={texture} alphaMap={alphaMap} toneMapped={false} />
       </mesh>
-      <mesh position={[0, -5, 0]} geometry={groundGeo}>
-        <meshStandardMaterial color="#332323" />
+      <mesh position={[0, 0, 0]} geometry={groundGeo}>
+        <meshStandardMaterial color="#746363" />
       </mesh>
     </group>
   )

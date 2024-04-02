@@ -5,7 +5,7 @@ import Grass from "./Grass"
 
 export default function App() {
   return (
-    <div style={{ height: '500px' }}>
+    <div style={{height:'500px'}}>
     <Canvas camera={{ position: [15, 15, 10] }}>
       <Sky azimuth={1} inclination={0.6} distance={1000} />
       <ambientLight />

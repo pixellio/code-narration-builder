@@ -2,16 +2,28 @@ import React, { Suspense } from "react"
 import { Canvas } from "@react-three/fiber"
 import { Sky, OrbitControls } from "@react-three/drei"
 import Grass from "./Grass"
+import {GlbObjLoader, LoadingFallback } from "./loaders/GLBLoader"
 
 export default function App() {
   return (
-    <div style={{height:'500px'}}>
+    <div style={{height:'100vh'}}>
     <Canvas camera={{ position: [15, 15, 10] }}>
       <Sky azimuth={1} inclination={0.6} distance={1000} />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       <Suspense fallback={null}>
         <Grass />
+        
+      </Suspense>
+      <Suspense fallback={<LoadingFallback />}>
+              
+      <GlbObjLoader
+            // ref={characterRef}
+            url='https://webgl-content.s3.ap-south-1.amazonaws.com/guard.glb'
+            animationName='Walk'
+            position={[0, 0, 0]}
+            scale={2.5}
+          />
       </Suspense>
       <OrbitControls minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 2.5} />
     </Canvas>

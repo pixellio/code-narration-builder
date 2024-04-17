@@ -50,7 +50,7 @@ export const GlbObjLoader = ({ url, position, scale, animationName }) => {
             action.play();
             mixer.update(clock.getDelta())
         }
-    }, [glbObj]);
+    }, [glbObj, animationName]);
 
     const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
     const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -63,7 +63,7 @@ export const GlbObjLoader = ({ url, position, scale, animationName }) => {
 
     })
     
-    return glbObj ? <primitive object={glbObj.scene} scale={scale}  position={position} ref={gltfRef} /> : <primitive object={sphere} scale={[1, 10, 1]} ref={gltfRef} />;
+    return glbObj ? <primitive object={glbObj.scene} scale={scale}  position={position} ref={gltfRef} /> : <primitive object={sphere} scale={[2, 2, 2]} ref={gltfRef} />;
 
 }
 

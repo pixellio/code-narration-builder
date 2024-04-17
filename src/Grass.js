@@ -1,7 +1,7 @@
 // Based on https://codepen.io/al-ro/pen/jJJygQ by al-ro, but rewritten in react-three-fiber
 //https://codesandbox.io/p/sandbox/grass-shader-8vv189?file=%2Fsrc%2FGrass.js%3A19%2C9-19%2C17
 import * as THREE from "three"
-import React, { useRef, useMemo } from "react"
+import React, { useRef, useMemo, useState } from "react"
 // import SimplexNoise from "simplex-noise"
 import { createNoise2D }  from "simplex-noise";
 import { useFrame, useLoader } from "@react-three/fiber"
@@ -40,7 +40,24 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
     geo.computeVertexNormals();
     return geo;
   }, [width])
-  useFrame((state) => (materialRef.current.uniforms.time.value = state.clock.elapsedTime / 4))
+
+  const meshRef = useRef(null); // Ref for the mesh object
+  const [intersections, setIntersections] = useState([]); // State to store raycast intersections
+
+  const handleRaycast = (ray) => {
+    const results = ray.intersectObject(meshRef.current, true); // Perform raycast
+    setIntersections(results || []); // Update intersections state
+  };
+
+  useFrame((state) => {
+    const camera = state.camera; // Get camera object
+    console.log({ state})
+    const mouse = state.pointer; // Get mouse position
+    const ray = new THREE.Raycaster(/*camera.position, mouse.clo.clone().unproject(camera)*/); // Create raycaster
+    ray.setFromCamera(mouse, camera)
+    handleRaycast(ray); // Perform raycast on each frame
+    return (materialRef.current.uniforms.time.value = state.clock.elapsedTime / 4)
+  })
   return (
     <group {...props}>
       <mesh>
@@ -53,9 +70,19 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
         </instancedBufferGeometry>
         <grassMaterial ref={materialRef} map={texture} alphaMap={alphaMap} toneMapped={false} />
       </mesh>
-      <mesh position={[0, 0, 0]} geometry={groundGeo}>
+      <mesh  geometry={groundGeo}>
         <meshStandardMaterial color="#746363" />
       </mesh>
+      <mesh ref={meshRef} position={[2, 5, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshBasicMaterial  />
+      </mesh>
+      {intersections.map((intersection, index) => (
+        <mesh key={index} visible={true} position={intersection.point}>
+          <sphereGeometry args={[0.1, 8, 8]} />
+          <meshBasicMaterial color="green" />
+        </mesh>
+      ))}
     </group>
   )
 }

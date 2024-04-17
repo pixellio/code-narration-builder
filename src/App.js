@@ -1,10 +1,46 @@
-import React, { Suspense } from "react"
+import React, { Suspense, useState, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
 import { Sky, OrbitControls } from "@react-three/drei"
 import Grass from "./Grass"
 import {GlbObjLoader, LoadingFallback } from "./loaders/GLBLoader"
-
+import { socket } from './connections/socket';
+import AnimationSwitch, {animationSwitchAction} from "./components/aniamtionSwitch"
+import {useSelector, useStore} from 'react-redux';
+import thunk from 'redux-thunk';
 export default function App() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const animatonAction = useSelector(state => state.charaterActions.action)
+  const reduxStore = useStore();
+ 
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onFooEvent(value) {
+      console.log({ value})
+      if (["Run","Walk", "Dance"].includes(value)) {
+       reduxStore.dispatch(animationSwitchAction(value))
+      }
+      
+      //setFooEvents(previous => [...previous, value]);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('chat message', onFooEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('chat message', onFooEvent);
+    };
+  }, []);
+
   return (
     <div style={{height:'100vh'}}>
     <Canvas camera={{ position: [15, 15, 10] }}>
@@ -20,64 +56,14 @@ export default function App() {
       <GlbObjLoader
             // ref={characterRef}
             url='https://webgl-content.s3.ap-south-1.amazonaws.com/guard.glb'
-            animationName='Walk'
+            animationName={animatonAction}
             position={[0, 0, 0]}
             scale={2.5}
           />
       </Suspense>
       <OrbitControls minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 2.5} />
     </Canvas>
+    <AnimationSwitch/>
     </div>
   )
 }
-
-// import React, { useState, useEffect } from 'react';
-// import Scene from './Scene';
-// import Object from './Object';
-
-// function App() {
-//   // Socket connection state (optional if server is used)
-//   const [socket, setSocket] = useState(null);
-
-//   // State for user input (e.g., object movement)
-//   const [userInput, setUserInput] = useState(null);
-
-//   // useEffect(() => {
-//   //   if (!socket) {
-//   //     const newSocket = io('http://localhost:your-server-port'); // Replace with your server URL
-//   //     setSocket(newSocket);
-//   //   }
-
-//   //   return () => {
-//   //     if (socket) {
-//   //       socket.disconnect();
-//   //     }
-//   //   };
-//   // }, [socket]);
-
-//   // Function to handle user input and potentially send it to the server (if applicable)
-//   const handleUserInput = (event) => {
-//     setUserInput(event.target.value); // Update state with user input
-//     if (socket) {
-//       socket.emit('user-input', event.target.value); // Send input to server (if using Socket.io)
-//     }
-//   };
-
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <h1>3D Project with Socket.io and Three.js</h1>
-//         {/* {socket && <p>Connected to server</p>}  */}
-//         {/* Optional connection status display */}
-//         <input type="text" placeholder="User Input" 
-//         // onChange={handleUserInput} 
-//         /> 
-//         {/* Optional user input field */}
-//       </header>
-//       {/* <Scene />  */}
-//       {/* Render the 3D scene */}
-//     </div>
-//   );
-// }
-
-// export default App;

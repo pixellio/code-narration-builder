@@ -51,7 +51,7 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
 
   useFrame((state) => {
     const camera = state.camera; // Get camera object
-    console.log({ state})
+
     const mouse = state.pointer; // Get mouse position
     const ray = new THREE.Raycaster(/*camera.position, mouse.clo.clone().unproject(camera)*/); // Create raycaster
     ray.setFromCamera(mouse, camera)

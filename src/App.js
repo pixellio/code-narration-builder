@@ -7,6 +7,9 @@ import { socket } from './connections/socket';
 import AnimationSwitch, {animationSwitchAction} from "./components/aniamtionSwitch"
 import {useSelector, useStore} from 'react-redux';
 import thunk from 'redux-thunk';
+import {AuthorizedEditOptionsComponent} from "./ide-components"
+import "./App.sass"
+
 export default function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const animatonAction = useSelector(state => state.charaterActions.action)
@@ -41,28 +44,35 @@ export default function App() {
     };
   }, []);
 
+  const user = { roles: ['editor', 'player'] };
+
   return (
-    <div style={{height:'100vh'}}>
-    <Canvas camera={{ position: [15, 15, 10] }}>
-      <Sky azimuth={1} inclination={0.6} distance={1000} />
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-      <Suspense fallback={null}>
-        <Grass />
-        
-      </Suspense>
-      <Suspense fallback={<LoadingFallback />}>
-              
-      <GlbObjLoader
-            // ref={characterRef}
-            url='https://webgl-content.s3.ap-south-1.amazonaws.com/guard.glb'
-            animationName={animatonAction}
-            position={[0, 0, 0]}
-            scale={2.5}
-          />
-      </Suspense>
-      <OrbitControls minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 2.5} />
-    </Canvas>
+    <div>
+    <div className="ide-render-setup"> 
+      <AuthorizedEditOptionsComponent user={user} />
+      <div className="rendering-view">
+        <Canvas camera={{ position: [15, 15, 10] }}>
+        <Sky azimuth={1} inclination={0.6} distance={1000} />
+        <ambientLight />
+        <pointLight position={[10, 10, 10]} />
+        <Suspense fallback={null}>
+          <Grass />
+          
+        </Suspense>
+        <Suspense fallback={<LoadingFallback />}>
+                
+        <GlbObjLoader
+              // ref={characterRef}
+              url='https://webgl-content.s3.ap-south-1.amazonaws.com/guard.glb'
+              animationName={animatonAction}
+              position={[0, 0, 0]}
+              scale={2.5}
+            />
+        </Suspense>
+        <OrbitControls minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 2.5} />
+        </Canvas>
+      </div>
+    </div>
     <AnimationSwitch/>
     </div>
   )

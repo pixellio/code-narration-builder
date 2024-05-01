@@ -2,6 +2,7 @@
   "name": "name_pj",
   "version": "0.1.0",
   "dependencies": {
+    "@ant-design/icons": "^5.3.6",
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^9.103.0",
     "@react-three/fiber": "^8.16.1",
@@ -11,6 +12,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "alea": "^1.0.1",
+    "antd": "^5.16.5",
     "draco3dgltf": "^1.5.7",
     "fs": "^0.0.1-security",
     "mini-css-extract-plugin": "^2.8.1",
@@ -55,6 +57,7 @@
     "sass": "^1.72.0",
     "sass-loader": "^14.1.1",
     "style-loader": "^3.3.4",
+    "terser-webpack-plugin": "^5.3.10",
     "url-loader": "^4.1.1",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",

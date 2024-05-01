@@ -6,17 +6,27 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const webpack = require("webpack")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-// 
+const TerserPlugin = require("terser-webpack-plugin")
 // const nodeExternals = require('webpack-node-externals');
 
 console.log("path", path.join(__dirname, "public"))
 module.exports = [
     {
         name: "browser",
-        entry: path.join(__dirname, "src/index.js"),
+        entry:  path.join(__dirname, "src/index.js"),
+        // entry: { 
+        //     main: { import: path.join(__dirname, "src/index.js"),  dependOn: 'shared'},
+        //     adminEditing:  { import: path.join(__dirname, "src/ide-components/index.js"),  dependOn: 'shared'},
+        //     shared: 'react',
+        // },
         output: {
             path: path.join(__dirname, "dist"),
             filename: "bundle.js"
+        },
+        performance: {
+            hints: false,
+            maxEntrypointSize: 512000,
+            maxAssetSize: 512000
         },
         mode: "development",
         devServer: {
@@ -82,6 +92,28 @@ module.exports = [
                     ]
                 },
                 {
+                    test: /\.sass$/,
+                    include: [
+                        path.join(__dirname, "/src"),
+                        path.join(__dirname, "node_modules")
+                    ],
+                    use: [
+                        {
+                            loader: MiniCssExtractPlugin.loader,
+                            options: {
+                                publicPath: 'dist', // Set the public path for the CSS file
+                            },
+                        },
+                        {
+                            loader: "css-loader",
+                            options: { modules: { localIdentName: '[local]' }, esModule: false }
+                        },
+                        {
+                            loader: "sass-loader"
+                        }
+                    ]
+                },
+                {
                     test: /\.(jpg|png|gif)$/, // Matches jpg, png, and gif files
                     use: {
                         loader: 'file-loader',
@@ -91,6 +123,37 @@ module.exports = [
                     },
                 },
             ]
+        },
+        //  Optional: Configuration for dynamic imports (if using lazy loading)
+        optimization: {
+            usedExports: true,
+            minimize: true,
+            minimizer: [
+                new TerserPlugin({
+                    terserOptions: {
+                        format: {
+                            comments: false
+                        }
+                    },
+                    extractComments: false
+                })
+            ]
+            // splitChunks: {
+            //     chunks: 'all', // Split all chunks by default
+            //     cacheGroups: {
+            //         vendor: { // Vendor chunk for external libraries
+            //             test: /[\\/]node_modules[\\/]/,
+            //             name: 'vendor',
+            //             chunks: 'all',
+            //         },
+            //         adminEditing: { // Chunk for admin editing features
+            //             test: /src\/ide-components$/,
+            //             name: 'adminEditing',
+            //             chunks: 'all',
+            //             minSize: 0, // Include even very small chunks (optional)
+            //         },
+            //     },
+            // },
         },
         plugins: [
             new HtmlWebpackPlugin({

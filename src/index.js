@@ -14,7 +14,6 @@ const store = configureStore({
  })
 
 window.addEventListener("DOMContentLoaded", function (e) {
-  console.log("ddddddddddd", document.getElementById('root'))
   const root = ReactDOM.createRoot(document.getElementById('root'));
   console.log({ root })
   root.render(
